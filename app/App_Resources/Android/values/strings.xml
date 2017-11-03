@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Plugins</string>
-  <string name="title_activity_kimera">Plugins</string>
+  <string name="app_name">SpeakToPay</string>
+  <string name="title_activity_kimera">SpeakToPay</string>
 
   <string name="shortcut_short_appicon">App Icon</string>
   <string name="shortcut_long_appicon">App Icon</string>

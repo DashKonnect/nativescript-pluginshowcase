@@ -6,6 +6,7 @@ import { TNSFontIconModule } from "nativescript-ngx-fonticon";
 import { NativeScriptUISideDrawerModule } from "nativescript-pro-ui/sidedrawer/angular";
 import { MenuComponent } from "./menu/menu.component";
 import { HomeComponent } from "./home/home.component";
+import { SpeechComponent } from "./speech/speech.component"
 import { InfoModalComponent } from "./info-modal/info-modal";
 
 const routerConfig: Routes = [

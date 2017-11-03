@@ -17,6 +17,14 @@ import { TNSPlayer } from "nativescript-audio";
 import { ImageSource } from "tns-core-modules/image-source";
 import { isIOS } from "tns-core-modules/platform";
 import { Slider } from "tns-core-modules/ui/slider";
+import { SelectedIndexChangedEventData } from "nativescript-drop-down";
+import { ValueList } from "nativescript-drop-down";
+import { NativeScriptHttpModule } from "nativescript-angular/http";
+import { Feedback } from "nativescript-feedback";
+
+var googleTranslate = require('google-translate')("696d8f6e86f09e1525c0734c4b41b1cbd7b2bdcd");
+var apiai = require('apiai');
+var app = apiai("7ff3c98a51fd4664be02a6ec78b52a79");
 
 @Component({
   selector: "page-speech",
@@ -79,6 +87,54 @@ export class SpeechComponent extends AbstractMenuPageComponent implements OnInit
   speakRate: number = isIOS ? 50 : 100;
   maxSpeakRate: number = isIOS ? 100 : 200;
   private recordingAvailable: boolean;
+  public items: ValueList<string>;
+  private feedback: Feedback;
+
+
+  config = {
+    locale: "en-IN", // optional, uses the device locale by default
+    // set to true to get results back continuously
+    returnPartialResults: true,
+    // this callback will be invoked repeatedly during recognition
+    onResult: (transcription: SpeechRecognitionTranscription) => {
+      this.zone.run(() => this.recognizedText = transcription.text);
+      this.lastTranscription = transcription.text;
+
+      googleTranslate.translate('My name is Brandon', this.detectLanguage(this.lastTranscription), function(err, translation) {
+        this.lastTranscription = translation.translatedText;
+
+        var request = app.textRequest(transcription.text, {
+          sessionId: '123456'
+        });
+        
+        request.on('response', function(response) {
+          this.feedback.success({
+            title: "Money Sent!",
+            message: response,
+            duration: 2500,
+            // type: FeedbackType.Success, // no need to specify when using 'success' instead of 'show'
+            onTap: () => {
+              console.log("showSuccess tapped");
+            }
+          });
+        });
+        
+        request.on('error', function(error) {
+            console.log(error);
+        });
+        
+        request.end();
+
+      });
+     
+
+
+      if (transcription.finished) {
+        this.spoken = true;
+        setTimeout(() => this.speak(transcription.text), 300);
+      }
+    },
+  }
 
   // @ViewChild("recordButton") recordButton: ElementRef;
 
@@ -87,6 +143,33 @@ export class SpeechComponent extends AbstractMenuPageComponent implements OnInit
               protected modalService: ModalDialogService,
               private zone: NgZone) {
     super(menuComponent, vcRef, modalService);
+    this.items = new ValueList<string>([
+      { value: "en-IN", display: "English" }, 
+      { value: "hi-IN", display: "Hindi" },
+      { value: "ml-IN", display: "Malayalam" }
+    ]);
+    this.feedback = new Feedback();
+  }
+
+  public detectLanguage(text: String){
+    googleTranslate.detectLanguage('Gracias', function(err, detection) {
+      return detection.language;
+      // =>  es
+    });
+  }
+
+  public onchange(args: SelectedIndexChangedEventData) {
+      console.log(`Drop Down selected index changed from ${args.oldIndex} to ${args.newIndex}.  New value is ${this.items.getValue(
+            args.newIndex)}`);
+      this.config.locale = this.items.getValue(args.newIndex);
+  }
+
+  public onopen() {
+      console.log("Drop Down opened.");
+  }
+
+  public onclose() {
+      console.log("Drop Down closed.");
   }
 
   ngOnInit(): void {
@@ -143,20 +226,7 @@ export class SpeechComponent extends AbstractMenuPageComponent implements OnInit
     }
 
     this.recording = true;
-    this.speech2text.startListening({
-      // locale: "en-US", // optional, uses the device locale by default
-      // set to true to get results back continuously
-      returnPartialResults: true,
-      // this callback will be invoked repeatedly during recognition
-      onResult: (transcription: SpeechRecognitionTranscription) => {
-        this.zone.run(() => this.recognizedText = transcription.text);
-        this.lastTranscription = transcription.text;
-        if (transcription.finished) {
-          this.spoken = true;
-          setTimeout(() => this.speak(transcription.text), 300);
-        }
-      },
-    }).then(
+    this.speech2text.startListening(this.config).then(
         (started: boolean) => {
           console.log("started listening");
         },
@@ -178,7 +248,7 @@ export class SpeechComponent extends AbstractMenuPageComponent implements OnInit
       text: text,
       speakRate: this.getSpeakRate(),
       pitch: this.getPitch(),
-      // locale: "en-US", // optional, uses the device locale by default
+      locale: this.config.locale, // optional, uses the device locale by default
       finishedCallback: () => {
         this.handleFollowUpAction(text.toLowerCase());
       }
