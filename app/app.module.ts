@@ -14,6 +14,7 @@ import { device, isIOS } from "tns-core-modules/platform";
 import { DeviceType } from "tns-core-modules/ui/enums";
 import * as application from "application";
 import { ToastService } from "./services/toast.service";
+import { NativeScriptHttpModule } from "nativescript-angular/http";
 
 const fs = require("file-system");
 
@@ -29,6 +30,7 @@ Config.isTablet = device.deviceType === DeviceType.Tablet;
   ],
   imports: [
     NativeScriptModule,
+    NativeScriptHttpModule,
     NativeScriptFormsModule,
     NativeScriptAnimationsModule,
     AppRoutingModule,

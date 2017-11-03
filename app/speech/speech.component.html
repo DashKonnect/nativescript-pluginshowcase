@@ -11,6 +11,20 @@
 
 <StackLayout class="main-content">
   <Gradient height="100%" direction="to bottom" colors="orangered, #b03000" class="p-20">
+
+    <DropDown #dd
+                  backroundColor="red"
+                  color="darkorange"
+                  selectedIndex = "0"
+                  fontSize="18"
+                  [items]="items"
+                  [(ngModel)]="selectedIndex"
+                  (selectedIndexChanged)="onchange($event)"
+                  (opened)="onopen()"
+                  (closed)="onclose()"
+                  row="0"
+                  colSpan="2"></DropDown>
+
     <GridLayout rows="*, 132" columns="*">
 
       <StackLayout [@scale-in]="'in'" row="0" class="p-20" style="background-color: rgba(255, 255, 255, 210)" borderRadius="20">

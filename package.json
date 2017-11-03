@@ -6,10 +6,10 @@
   "homepage": "https://github.com/EddyVerbruggen/nativescript-pluginshowcase",
   "nativescript": {
     "id": "org.nativescript.pluginshowcase",
-    "tns-android": {
+    "tns-ios": {
       "version": "3.3.0"
     },
-    "tns-ios": {
+    "tns-android": {
       "version": "3.3.0"
     }
   },
@@ -49,6 +49,8 @@
     "@angular/http": "4.4.6",
     "@angular/platform-browser": "4.4.6",
     "@angular/router": "4.4.6",
+    "apiai": "4.0.3",
+    "google-translate": "2.0.5",
     "nativescript-angular": "4.4.1",
     "nativescript-app-icon-changer": "^1.0.4",
     "nativescript-app-shortcuts": "^2.0.0",
